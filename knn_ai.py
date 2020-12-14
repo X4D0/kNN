@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as  plt
 
-# Create 5 Dataset (Training Set and Testing Set)
+# Split Dataset (Training Set and Testing Set)
 def createDataset(x,y):
     #Dataset 1 (1-614 Training Set, sisanya Testing set)
     x_train1 = x[:614]
@@ -38,6 +38,11 @@ def createDataset(x,y):
     return (x_train1,x_test1,y_train1,y_test1,x_train2,x_test2,y_train2,y_test2
             ,x_train3,x_test3,y_train3,y_test3,x_train4,x_test4,y_train4,y_test4
             ,x_train5,x_test5,y_train5,y_test5)
+
+# Scaling using Manhattan
+def scaling(x_train1,x_test1,x_train2,x_test2,x_train3,x_test3,x_train4,x_test4,x_train5,x_test5):
+    jarak = abs(x_train1-x_test1)-abs(x_train2-x_test2)-abs(x_train3-x_test3)-abs(x_train4-x_test4)-abs(x_train5-x_test5)
+    return (jarak)
 
 # Importing CSV file
 diabetes = pd.read_csv('Diabetes.csv')
