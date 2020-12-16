@@ -2,7 +2,6 @@ import pandas as pd
 from math import sqrt
 import numpy as np
 import matplotlib.pyplot as  plt
-from collections import Counter
 
 # Split Dataset (Training Set and Testing Set)
 def createDataset(x,y):
@@ -42,49 +41,36 @@ def createDataset(x,y):
             ,x_train5,x_test5,y_train5,y_test5)
 
 # Distance Calculation using Manhattan
-def distance(x_train1,x_test1,x_train2,x_test2,x_train3,x_test3,x_train4,x_test4,x_train5,x_test5):
-    jarak = abs(x_train1-x_test1)-abs(x_train2-x_test2)-abs(x_train3-x_test3)-abs(x_train4-x_test4)-abs(x_train5-x_test5)
+def distance(xtr1,xtr2,xtr3,xtr4,xtr5,xtr6,xtr7,xtr8,xte1,xte2,xte3,xte4,xte5,xte6,xte7,xte8):
+    jarak = abs(xtr1-xte1)-abs(xtr2-xte2)-abs(xtr3-xte3)-abs(xtr4-xte4)-abs(xtr5-xte5)-abs(xtr6-xte6)-abs(xtr7-xte8)-abs(xtr8-xte8)
     return (jarak)
 
-# Calculate Euclidian Distance
-def eucl(row1,row2):
-    distance = 0.0
-    for i in range(len(row1)-1):
-        distance += (row1[i] - row2[i])**2
-    return sqrt(distance)
+def vote(zero,one):
+    kategori = []
+    kategori.insert(0,zero)
+    kategori.insert(1,one)
+    return (kategori)
 
-# Predict Data Test
-def predict(x_test,x_train,y_train,k):
-    final_output = []
-    for i in range(len(x_test)):
-        d = []
-        votes = []
-        for j in range(len(x_train)):
-            dist = distance(x_train[j],x_test[j])
-            d.append([dist,j])
-        d.sort()
-        d = d[0:k]
-        for d, j in d:
-            votes.append(y_train[j])
-        final = Counter(votes).most_common(1)[0][0]
-        final_output.append(final)
-    return final_output
+def sort(listnya):
+    for i in range(1, len(listnya)):
+        j = i-1
+        nextnya = listnya[i]
+        while (listnya[j] > nextnya) and (j >= 0):
+            listnya[j+1] = listnya[j]
+            j-=1
+        listnya[j+1] = nextnya
+    return (listnya)
 
-# Scoring
-def score(x_test,x_train,y_train,y_test,k):
-    prediction = predict(x_test,x_train,y_train,k)
-    return (prediction==y_test).sum()/len(y_test)
-    
 ' =============== MAIN ==================== '
-k = 7
 
 ' --- Importing CSV file --- '
 diabetes = pd.read_csv('Diabetes.csv')
 
-' --- Create Variable X and Y --- '
-'''
+''' --- Create Variable X and Y --- 
+
 X untuk seluruh kolom kecuali Outcome, dan
-Y untuk Kolom Outcome daan mengubah tipe numerik menjadi category
+Y untuk Kolom Outcome dan mengubah tipe numerik menjadi category
+
 '''
 x = diabetes.drop(['Outcome'], axis = 1)
 x_data = x.values.tolist()
@@ -93,15 +79,55 @@ y_data = y.values.tolist()
 
 ' Generate Datasets '
 x_train1,x_test1,y_train1,y_test1,x_train2,x_test2,y_train2,y_test2,x_train3,x_test3,y_train3,y_test3,x_train4,x_test4,y_train4,y_test4,x_train5,x_test5,y_train5,y_test5 = createDataset(x_data,y_data)
-'''
-print("Dataset 1 :\n")
-print("X-Train 1 :\n",x_train1)
-print("X-Test 1 :\n",x_test1)
-print("Y-Train 1 :\n",y_train1)
-print("Y-Tes 1 :\n",y_test1)
 
-print("check : \n")
-print(x_train1.iloc[3,0:2])
-'''
+' START '
+k = 7
+jarak1 = []
+temp = []
+jarak2 = []
+close = []
+categor = []
+categores = []
+i = 0
 
-print(x_test1)
+while i < len(x_test1):
+    n = 0
+    while n < len(x_train1):
+        jarak = distance(float(x_train1[n][0]),float(x_train1[n][1]),float(x_train1[n][2]),float(x_train1[n][3]),float(x_train1[n][4]),float(x_train1[n][5]),
+                         float(x_train1[n][6]),float(x_train1[n][7]),float(x_test1[i][0]),float(x_test1[i][1]),float(x_test1[i][2]),float(x_test1[i][3]),
+                         float(x_test1[i][4]),float(x_test1[i][5]),float(x_test1[i][6]),float(x_test1[i][7]))
+        temp.insert(n,jarak)
+        jarak1.insert(n,jarak)
+        temp.append(y_train1[n])
+        jarak2.extend(temp)
+        temp.clear()
+        n += 1
+    m = 0
+    while m <= k:
+        zero = 0
+        one = 0
+        close = sort(jarak1)
+        z = 0
+        while z < 614 :
+            if close[m] == jarak2[z] :
+                z += 1  
+                if (jarak2[z] == '1'):
+                    one += 1
+                else :
+                    zero += 1 
+            else :
+                z=z+1
+        categor = vote(zero,one)
+        m += 1
+    if (categor[1]==1):
+        categores.insert(i,1)
+    else :
+        categores.insert(i,0)
+    jarak2.clear()
+    jarak1.clear()
+    close.clear()
+    categor.clear()
+    i += 1
+x = 0
+for x in range(0, len(categores)):
+    print ("baris ke-",x+1,", dengan Y = ",categores[x])'''
