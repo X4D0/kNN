@@ -1,7 +1,5 @@
 import pandas as pd
 from math import sqrt
-import numpy as np
-import matplotlib.pyplot as  plt
 
 # Split Dataset (Training Set and Testing Set)
 def createDataset(x):
@@ -102,12 +100,22 @@ def accuracy(actual,predicted):
             correct += 1
     return (correct/len(predicted))*100
 
+# Best K
+def bestK(avgsub,avg):
+    for i in range(len(avgsub)):
+        if avgsub[i][1] == avg:
+            return avgsub[i][0]
+        else:
+            return print("Not Found!")
+        
 # kNN
 def start(dataset,n_neighbor):
     k = 5
     akurazee = []
+    avgsub = []
     for n in n_neighbor:
         akurasi_total = []
+        
         for i in range(k):
             predict_result = []
             old_result = []
@@ -125,13 +133,14 @@ def start(dataset,n_neighbor):
                 fix_old = dataset[i][1][j][8]
                 old_result.append(fix_old)
                 akurasi = accuracy(old_result,predict_result)
-            print("Dataset-"+str(i+1)+" K="+str(n)+" Accuracy: "+str(akurasi))
+            #print("Dataset-"+str(i+1)+" K="+str(n)+" Accuracy: "+str(akurasi))
             akurasi_total.append(akurasi)
         avg = sum(akurasi_total)/len(akurasi_total)
+        avgsub.append([n,avg])
         akurazee.append(avg)
         akurasi_total.clear()
-        print("Accuracy Average : ",avg,"%\n")
-    return print("Highest Accuracy : ",max(akurazee),"%")
+        #print("Accuracy Average : ",avg,"%\n")
+    return print("K for testing : ",n_neighbor,"\nHighest Accuracy : "+str(max(akurazee))+"% with K = ",bestK(avgsub,max(akurazee)))
 
 ' =============== MAIN ==================== '
 
